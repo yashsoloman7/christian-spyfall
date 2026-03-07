@@ -81,16 +81,16 @@ def on_start_game(data):
         return
         
     players = room['players']
-    # Removing this check so testing alone is easier, but adding it back logic wise for production.
-    # We will enforce 2 players for production, but allow 1 if dev wants it.
-    # if len(players) < 2:
-    #     emit('error', {'message': 'Need at least 2 players'})
-    #     return
+    if len(players) < 3:
+        emit('error', {'message': 'Need at least 3 players'})
+        return
         
     room['state'] = 'playing'
     
     # Select Spy
     spy_player = random.choice(players)
+    room['spy_id'] = spy_player['id']
+    room['votes'] = {}
     
     # Select Location
     location_name = random.choice(list(locations.keys()))
@@ -108,13 +108,114 @@ def on_start_game(data):
             player_role = roles[i % len(roles)]
             player_location = location_name
             
+        game_duration = data.get('duration', 8 * 60)
         emit('game_started', {
             'location': player_location,
             'role': player_role,
             'is_spy': is_spy,
             'all_locations': list(locations.keys()),
-            'duration': 8 * 60 # 8 minutes
+            'duration': game_duration
         }, to=player['id'])
+
+@socketio.on('time_up')
+def on_time_up(data):
+    room_code = data.get('room_code')
+    if room_code not in rooms: return
+    room = rooms[room_code]
+    if request.sid != room['host_id'] or room['state'] != 'playing': return
+    
+    room['state'] = 'voting'
+    room['votes'] = {}
+    
+    emit('start_voting', {
+        'players': [{'id': p['id'], 'name': p['name']} for p in room['players']]
+    }, room=room_code)
+
+def check_voting(room_code, room):
+    if len(room['votes']) >= len(room['players']):
+        tally = {}
+        for v in room['votes'].values():
+            tally[v] = tally.get(v, 0) + 1
+            
+        max_votes = max(tally.values())
+        most_voted = [pid for pid, count in tally.items() if count == max_votes]
+        
+        spy_id = room['spy_id']
+        spy_player = next((p for p in room['players'] if p['id'] == spy_id), None)
+        spy_name = spy_player['name'] if spy_player else 'Unknown'
+        
+        if len(most_voted) == 1 and most_voted[0] == spy_id:
+            # Spy caught
+            room['state'] = 'spy_guessing'
+            emit('spy_caught', {
+                'spy_id': spy_id,
+                'locations': list(locations.keys()),
+                'spy_name': spy_name
+            }, room=room_code)
+        else:
+            # Spy wins
+            room['state'] = 'game_over'
+            emit('game_over', {
+                'winner': 'Spy',
+                'reason': 'The Spy was not successfully voted out!',
+                'spy_name': spy_name,
+                'location': room['location']
+            }, room=room_code)
+
+@socketio.on('submit_vote')
+def on_submit_vote(data):
+    room_code = data.get('room_code')
+    voted_for_id = data.get('voted_for_id')
+    if room_code not in rooms: return
+    room = rooms[room_code]
+    if room['state'] != 'voting': return
+    
+    room['votes'][request.sid] = voted_for_id
+    check_voting(room_code, room)
+
+@socketio.on('guess_location')
+def on_guess_location(data):
+    room_code = data.get('room_code')
+    location_guess = data.get('location')
+    if room_code not in rooms: return
+    room = rooms[room_code]
+    if room['state'] != 'spy_guessing': return
+    if request.sid != room['spy_id']: return
+    
+    room['state'] = 'game_over'
+    actual_location = room['location']
+    
+    spy_player = next((p for p in room['players'] if p['id'] == room['spy_id']), None)
+    spy_name = spy_player['name'] if spy_player else 'Unknown'
+    
+    if location_guess == actual_location:
+        emit('game_over', {
+            'winner': 'Spy',
+            'reason': f'The Spy guessed the correct location: {actual_location}',
+            'spy_name': spy_name,
+            'location': actual_location
+        }, room=room_code)
+    else:
+        emit('game_over', {
+            'winner': 'Innocents',
+            'reason': f'The Spy guessed incorrectly! Set location was: {actual_location}',
+            'spy_name': spy_name,
+            'location': actual_location
+        }, room=room_code)
+
+@socketio.on('return_to_lobby')
+def on_return_to_lobby(data):
+    room_code = data.get('room_code')
+    if room_code not in rooms: return
+    room = rooms[room_code]
+    if request.sid != room['host_id']: return
+    
+    room['state'] = 'lobby'
+    room['location'] = None
+    room['spy_id'] = None
+    room['votes'] = {}
+    
+    emit('back_to_lobby', {}, room=room_code)
 
 @socketio.on('disconnect')
 def on_disconnect():
@@ -122,6 +223,10 @@ def on_disconnect():
         players = room['players']
         for i, p in enumerate(players):
             if p['id'] == request.sid:
+                # If they already voted, remove their vote
+                if request.sid in room.get('votes', {}):
+                    del room['votes'][request.sid]
+                
                 players.pop(i)
                 leave_room(room_code)
                 
@@ -132,6 +237,10 @@ def on_disconnect():
                         room['host_id'] = players[0]['id']
                         players[0]['is_host'] = True
                     emit('update_players', {'players': players, 'host_id': room['host_id']}, room=room_code)
+                    
+                    # If we are in voting phase, re-evaluate votes
+                    if room['state'] == 'voting':
+                        check_voting(room_code, room)
                 break
 
 if __name__ == '__main__':
