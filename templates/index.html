@@ -101,6 +101,39 @@
                     <span id="player-count" class="text-gold font-mono font-bold bg-gray-800 px-2 py-1 rounded">0</span>
                 </div>
 
+                <!-- How to Play Section -->
+                <div class="mb-6 bg-gray-900 bg-opacity-40 rounded-xl border border-gray-800 overflow-hidden text-left">
+                    <button id="btn-toggle-rules"
+                        class="w-full flex items-center justify-between p-4 text-gold hover:bg-gray-800 transition-colors">
+                        <span class="font-bold uppercase tracking-widest text-sm"><i
+                                class="fa-solid fa-book-open mr-2"></i>How to Play</span>
+                        <i id="rules-icon" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div id="rules-content"
+                        class="hidden px-4 pb-4 text-sm text-gray-300 space-y-3 pt-2 border-t border-gray-800">
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-1 text-gold mt-1 mr-3 w-4 text-center"></i>
+                            <p>Everyone receives the same <strong>Secret Location</strong>, except for one person who
+                                gets <strong>The Spy</strong>.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-2 text-gold mt-1 mr-3 w-4 text-center"></i>
+                            <p>Ask each other questions to figure out who the Spy is without giving the location away.
+                            </p>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-3 text-gold mt-1 mr-3 w-4 text-center"></i>
+                            <p><strong>The Spy's Goal:</strong> Blend in, figure out the location, and avoid getting
+                                caught.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-video text-red-400 mt-1 text-lg mr-3 shadow-sm w-4 text-center"></i>
+                            <p class="font-semibold text-white">Recommended: Play on a Video call (Zoom/Meet/Discord) to
+                                see everyone's reactions!</p>
+                        </div>
+                    </div>
+                </div>
+
                 <ul id="player-list" class="flex-grow space-y-3 overflow-y-auto mb-8 pr-2 custom-scrollbar">
                     <!-- Players inserted here -->
                 </ul>

@@ -53,7 +53,10 @@ const els = {
     revealLocation: document.getElementById('reveal-location'),
     gameOverHostControls: document.getElementById('game-over-host-controls'),
     gameOverWaiting: document.getElementById('game-over-waiting'),
-    btnPlayAgain: document.getElementById('btn-play-again')
+    btnPlayAgain: document.getElementById('btn-play-again'),
+    btnToggleRules: document.getElementById('btn-toggle-rules'),
+    rulesIcon: document.getElementById('rules-icon'),
+    rulesContent: document.getElementById('rules-content')
 };
 
 // Helpers
@@ -154,6 +157,11 @@ els.btnPlayAgain.addEventListener('click', () => {
     els.btnPlayAgain.prepend(icon);
 
     socket.emit('return_to_lobby', { room_code: myRoomCode });
+});
+
+els.btnToggleRules?.addEventListener('click', () => {
+    els.rulesContent.classList.toggle('hidden');
+    els.rulesIcon.classList.toggle('rotate-180');
 });
 
 // Role Card Toggle via Transform
