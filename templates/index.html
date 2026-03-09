@@ -39,7 +39,7 @@
             <!-- Loading Screen -->
             <div id="screen-loading"
                 class="flex-grow flex flex-col justify-center items-center text-center pb-12 transition-opacity duration-500">
-                <h1 class="text-4xl text-gold font-bold mb-10 tracking-wider">CHRISTIAN<br>SPYFALL</h1>
+                <h1 class="text-4xl text-gold font-bold mb-10 tracking-wider">CHRISTIAN<br>CHRISTIANSPYFALL</h1>
                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold mb-10"></div>
                 <div
                     class="italic text-gray-300 max-w-xs bg-gray-900 bg-opacity-50 p-6 rounded-lg border border-gray-800 shadow-xl">
@@ -51,7 +51,13 @@
             <!-- Home Screen -->
             <div id="screen-home"
                 class="hidden flex-grow flex flex-col justify-center items-center text-center pb-12 slide-in">
-                <h1 class="text-4xl text-gold font-bold mb-10 tracking-widest">SPYFALL</h1>
+
+                <div class="mb-8 w-full">
+                    <h2 class="text-2xl text-white font-bold tracking-wider uppercase">Christian Community Church</h2>
+                    <p class="text-sm text-gray-400 italic my-1 lowercase">presents</p>
+                    <h1 class="text-3xl text-gold font-bold tracking-widest uppercase whitespace-nowrap">Christian
+                        Spyfall</h1>
+                </div>
 
                 <div
                     class="w-full space-y-4 bg-gray-900 bg-opacity-40 p-6 rounded-2xl border border-gray-800 shadow-2xl">
@@ -84,6 +90,40 @@
                 <p id="home-error"
                     class="text-red-400 mt-6 hidden bg-red-900 bg-opacity-20 px-4 py-2 rounded border border-red-800 text-sm font-semibold slide-in">
                 </p>
+
+                <!-- How to Play Section (Home) -->
+                <div
+                    class="w-full mt-6 bg-gray-900 bg-opacity-40 rounded-xl border border-gray-800 overflow-hidden text-left shadow-xl">
+                    <button id="btn-toggle-rules-home"
+                        class="w-full flex items-center justify-between p-4 text-gold hover:bg-gray-800 transition-colors">
+                        <span class="font-bold uppercase tracking-widest text-sm"><i
+                                class="fa-solid fa-book-open mr-2"></i>How to Play & Rules</span>
+                        <i id="rules-icon-home" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div id="rules-content-home"
+                        class="hidden px-4 pb-4 text-sm text-gray-300 space-y-3 pt-2 border-t border-gray-800">
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-1 text-gold mt-1 mr-3 w-4 text-center"></i>
+                            <p>Everyone receives the same <strong>Secret Location</strong>, except for one person who
+                                gets <strong>The Spy</strong>.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-2 text-gold mt-1 mr-3 w-4 text-center"></i>
+                            <p>Ask each other questions to figure out who the Spy is without giving the location away.
+                            </p>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-3 text-gold mt-1 mr-3 w-4 text-center"></i>
+                            <p><strong>The Spy's Goal:</strong> Blend in, figure out the location, and avoid getting
+                                caught.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fa-solid fa-video text-red-400 mt-1 text-lg mr-3 shadow-sm w-4 text-center"></i>
+                            <p class="font-semibold text-white">Recommended: Play on a Video call (Zoom/Meet/Discord) to
+                                see everyone's reactions!</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Lobby Screen -->

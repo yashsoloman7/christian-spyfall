@@ -56,7 +56,10 @@ const els = {
     btnPlayAgain: document.getElementById('btn-play-again'),
     btnToggleRules: document.getElementById('btn-toggle-rules'),
     rulesIcon: document.getElementById('rules-icon'),
-    rulesContent: document.getElementById('rules-content')
+    rulesContent: document.getElementById('rules-content'),
+    btnToggleRulesHome: document.getElementById('btn-toggle-rules-home'),
+    rulesIconHome: document.getElementById('rules-icon-home'),
+    rulesContentHome: document.getElementById('rules-content-home')
 };
 
 // Helpers
@@ -162,6 +165,11 @@ els.btnPlayAgain.addEventListener('click', () => {
 els.btnToggleRules?.addEventListener('click', () => {
     els.rulesContent.classList.toggle('hidden');
     els.rulesIcon.classList.toggle('rotate-180');
+});
+
+els.btnToggleRulesHome?.addEventListener('click', () => {
+    els.rulesContentHome.classList.toggle('hidden');
+    els.rulesIconHome.classList.toggle('rotate-180');
 });
 
 // Role Card Toggle via Transform
