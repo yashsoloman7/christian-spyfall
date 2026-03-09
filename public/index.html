@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Christian Spyfall – A biblical-themed multiplayer spy party game by Christian Community Church Bhilai. Find the spy before time runs out!">
     <title>Christian Spyfall</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Socket.IO -->
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- Socket.IO (loaded from our own server) -->
+    <script src="/socket.io/socket.io.js"></script>
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -23,7 +24,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 
 <body class="bg-deepblue text-white min-h-screen font-sans">
@@ -222,7 +223,7 @@
                                 class="fa-solid fa-eye-slash text-5xl mb-6 text-gray-500 group-hover:text-gold transition-colors"></i>
                             <p
                                 class="text-lg font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-300">
-                                Tap & Hold<br>To Reveal</p>
+                                Tap &amp; Hold<br>To Reveal</p>
                         </div>
 
                         <!-- Revealed Back State -->
@@ -258,7 +259,7 @@
                 <!-- Early End game for Host -->
                 <button id="btn-end-game"
                     class="w-full bg-yellow-600 bg-opacity-30 border border-yellow-700 text-yellow-500 font-bold rounded-lg py-3 hover:bg-yellow-600 hover:text-white transition-colors text-sm uppercase tracking-widest mb-3 hidden">
-                    End & Vote Now
+                    End &amp; Vote Now
                 </button>
 
                 <button id="btn-leave"
@@ -338,7 +339,7 @@
         </div>
     </div>
 
-    <script src="/static/js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 
 </html>

@@ -80,11 +80,10 @@ function showError(msg) {
 
 // Initial setup - Show logo, then home screen
 setTimeout(() => {
-    // Add fade out class to loading screen
     screens.loading.style.opacity = '0';
     setTimeout(() => {
         showScreen('home');
-        screens.loading.style.opacity = '1'; // reset
+        screens.loading.style.opacity = '1'; // reset for next time
     }, 500);
 }, 2500);
 
@@ -93,30 +92,25 @@ els.roomCodeInput.addEventListener('input', function () {
     this.value = this.value.toUpperCase();
 });
 
-// Events
+// ─── Button Events ───────────────────────────────────────────────────────────
+
 els.btnCreate.addEventListener('click', () => {
     const name = els.playerName.value.trim();
     if (!name) return showError("Please enter your name");
-
-    // Save to localstorage for convenience
     localStorage.setItem('spyfall_name', name);
-
     socket.emit('create_room', { name });
 });
 
 els.btnJoin.addEventListener('click', () => {
     const name = els.playerName.value.trim();
     const code = els.roomCodeInput.value.trim();
-
     if (!name) return showError("Please enter your name");
     if (!code || code.length !== 4) return showError("Invalid room code");
-
     localStorage.setItem('spyfall_name', name);
     socket.emit('join_room', { name, room_code: code });
 });
 
 els.btnStart.addEventListener('click', () => {
-    // Add a spin to button
     const icon = els.btnStart.querySelector('i') || document.createElement('i');
     icon.className = "fa-solid fa-spinner fa-spin mr-2";
     els.btnStart.prepend(icon);
@@ -127,7 +121,6 @@ els.btnStart.addEventListener('click', () => {
         if (isNaN(durationMinutes) || durationMinutes < 1) durationMinutes = 8;
     }
     const durationSeconds = durationMinutes * 60;
-
     socket.emit('start_game', { room_code: myRoomCode, duration: durationSeconds });
 });
 
@@ -146,11 +139,9 @@ els.btnLeave.addEventListener('click', () => {
 els.btnSubmitGuess.addEventListener('click', () => {
     const guess = els.spyLocationGuess.value;
     if (!guess) return;
-
     const icon = els.btnSubmitGuess.querySelector('i') || document.createElement('i');
     icon.className = "fa-solid fa-spinner fa-spin mr-2";
     els.btnSubmitGuess.prepend(icon);
-
     socket.emit('guess_location', { room_code: myRoomCode, location: guess });
 });
 
@@ -158,7 +149,6 @@ els.btnPlayAgain.addEventListener('click', () => {
     const icon = els.btnPlayAgain.querySelector('i') || document.createElement('i');
     icon.className = "fa-solid fa-spinner fa-spin mr-2";
     els.btnPlayAgain.prepend(icon);
-
     socket.emit('return_to_lobby', { room_code: myRoomCode });
 });
 
@@ -172,32 +162,30 @@ els.btnToggleRulesHome?.addEventListener('click', () => {
     els.rulesIconHome.classList.toggle('rotate-180');
 });
 
-// Role Card Toggle via Transform
+// ─── Role Card 3D Flip ───────────────────────────────────────────────────────
 function bindRoleCardEvents() {
     const downEvents = ['mousedown', 'touchstart'];
     const upEvents = ['mouseup', 'mouseleave', 'touchend', 'touchcancel'];
 
     downEvents.forEach(evt => {
-        els.roleCardContainer.addEventListener(evt, (e) => {
-            if (evt.includes('touch')) { } // Can prevent default if needed, but watch out for scrolling
+        els.roleCardContainer.addEventListener(evt, () => {
             els.roleCardInner.classList.add('rotate-y-180-active');
         }, { passive: true });
     });
 
     upEvents.forEach(evt => {
-        els.roleCardContainer.addEventListener(evt, (e) => {
+        els.roleCardContainer.addEventListener(evt, () => {
             els.roleCardInner.classList.remove('rotate-y-180-active');
         }, { passive: true });
     });
 
-    // Disable right click on the card
     els.roleCardContainer.addEventListener('contextmenu', e => e.preventDefault());
 }
 
 bindRoleCardEvents();
 
+// ─── Socket Events ───────────────────────────────────────────────────────────
 
-// Socket Events
 socket.on('room_created', (data) => {
     myRoomCode = data.room_code;
     myPlayerId = data.player_id;
@@ -272,10 +260,9 @@ socket.on('update_players', (data) => {
 socket.on('game_started', (data) => {
     gameData = data;
 
-    // Cleanup UI
     const spin = els.btnStart.querySelector('.fa-spinner');
     if (spin) spin.remove();
-    els.roleCardInner.classList.remove('rotate-y-180-active'); // ensure it's hidden initially
+    els.roleCardInner.classList.remove('rotate-y-180-active');
 
     showScreen('game');
 
@@ -297,11 +284,9 @@ socket.on('game_started', (data) => {
 
     els.gameRole.textContent = data.role;
 
-    // Populate locations
+    // Populate locations reference
     els.locationReference.innerHTML = '';
-    // Sort locations alphabetically
     const sortedLocations = [...data.all_locations].sort();
-
     sortedLocations.forEach(loc => {
         const li = document.createElement('li');
         li.className = "flex items-start space-x-2 py-1";
@@ -309,7 +294,6 @@ socket.on('game_started', (data) => {
         els.locationReference.appendChild(li);
     });
 
-    // Start timer
     startTimer(data.duration);
 });
 
@@ -337,7 +321,6 @@ function startTimer(duration) {
 
 function updateTimerDisplay() {
     if (remainingTime < 0) return;
-
     const m = Math.floor(remainingTime / 60).toString().padStart(2, '0');
     const s = (remainingTime % 60).toString().padStart(2, '0');
     els.timer.textContent = `${m}:${s}`;
@@ -354,7 +337,6 @@ if (savedName) {
     els.playerName.value = savedName;
 }
 
-// Additional Socket Events for Voting & End Game
 socket.on('start_voting', (data) => {
     clearInterval(timerInterval);
     showScreen('voting');
@@ -364,8 +346,7 @@ socket.on('start_voting', (data) => {
     els.voteContainer.classList.remove('hidden');
 
     data.players.forEach(p => {
-        // Can't vote for yourself
-        if (p.id === myPlayerId) return;
+        if (p.id === myPlayerId) return; // Can't vote for yourself
 
         const btn = document.createElement('button');
         btn.className = "w-full bg-gray-800 border border-gray-700 hover:border-gold hover:bg-gray-700 text-white font-semibold rounded-lg py-3 px-4 transition-all text-left flex items-center shadow-lg";
@@ -427,7 +408,6 @@ socket.on('game_over', (data) => {
     if (isHost) {
         els.gameOverHostControls.classList.remove('hidden');
         els.gameOverWaiting.classList.add('hidden');
-
         const spin = els.btnPlayAgain.querySelector('.fa-spinner');
         if (spin) spin.remove();
     } else {
